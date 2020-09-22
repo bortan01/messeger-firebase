@@ -58,7 +58,7 @@ if (isset($_POST['login_user']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
 	$username = $_POST['username'];
 	$password = $_POST['password'];
 
-	
+
 		//user input validation required here -- start
 		
 

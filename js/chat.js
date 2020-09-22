@@ -192,7 +192,7 @@ function realTime() {
               "</div>";
           }
         }
-        if (change.type === "modified") {
+        if (change.type === "modified") { 
         }
         if (change.type === "removed") {
         }
