@@ -29,14 +29,25 @@ $("#login-btn").on("click", function () {
     method: "POST",
     data: $("#login-form").serialize(),
     success: function (resp) {
-      console.log(resp);
       if (!resp.err) {
-      
+        var token = resp.token;
+        console.log(resp.message);
+        firebase
+          .auth()
+          .signInWithCustomToken(token)
+          .catch(function (error) {
+            // Handle Errors here.
+            var errorCode = error.code;
+            var errorMessage = error.message;
 
-        $("#login-btn").html(btnHTML);
-        if (resp.user_uuid != "") {
-          window.location.href = "chat.php";
-        }
+            alert(errorMessage);
+          })
+          .then(function (data) {
+            $("#login-btn").html(btnHTML);
+            if (data.user.uid != "") {
+              window.location.href = "chat.php";
+            }
+          });
       } else {
         alert(response.message);
       }
@@ -53,7 +64,6 @@ function changeForm($this) {
 
   $(".content").toggleClass("active");
 }
-
 $(".card input").on("focus blur", function () {
   $(".card").toggleClass("active");
 });

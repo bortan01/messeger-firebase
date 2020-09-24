@@ -1,15 +1,15 @@
 var chat_data = {},
-  user_uuid,
-  chatHTML = "",
-  chat_uuid = "",
-  userList = [];
+user_uuid,
+chatHTML = "",
+chat_uuid = "",
+userList = [];
+var newMessage = "";
+
 firebase.auth().onAuthStateChanged(function (user) {
   if (user) {
-    console.log(user);
     user_uuid = user.uid;
 
     getUsers();
-    console.log(user_uuid);
   } else {
     console.log("Not sign in");
   }
@@ -40,18 +40,15 @@ function logout() {
 
 function getUsers() {
   $.ajax({
-    url: "process.php",
-    method: "POST",
+    url: "http://localhost/API-REST-PHP/Usuario/obtenerUsuarios",
+    method: "GET",
     data: { getUsers: 1 },
     success: function (response) {
-      console.log(response);
-      var resp = JSON.parse(response);
-      if (resp.status == 200) {
-        var users = resp.message.users;
+      if (response.status == 200) {
+        var users = response.message.users;
         var usersHTML = "";
         var messageCount = "";
         $.each(users, function (index, value) {
-          console.log(value.uuid);
           if (user_uuid != value.uuid) {
             usersHTML +=
               '<div class="user" uuid="' +
@@ -79,8 +76,6 @@ function getUsers() {
 }
 
 $(document.body).on("click", ".user", function () {
-  console.log($(this).attr("uuid"));
-
   var name = $(this).find("strong").text();
   var user_1 = user_uuid;
   var user_2 = $(this).attr("uuid");
@@ -89,12 +84,12 @@ $(document.body).on("click", ".user", function () {
   $(".name").text(name);
 
   $.ajax({
-    url: "process.php",
+    url: "http://localhost/API-REST-PHP/Usuario/obtenerChat",
     method: "POST",
     data: { connectUser: 1, user_1: user_1, user_2: user_2 },
-    success: function (resposne) {
-      console.log(resposne);
-      var resp = JSON.parse(resposne);
+    success: function (resp) {
+      console.log(resp);
+
       chat_data = {
         chat_uuid: resp.message.chat_uuid,
         user_1_uuid: resp.message.user_1_uuid,
@@ -163,7 +158,7 @@ $(".send-btn").on("click", function () {
       });
   }
 });
-var newMessage = "";
+
 function realTime() {
   db.collection("chat")
     .where("chat_uuid", "==", chat_data.chat_uuid)
@@ -192,7 +187,7 @@ function realTime() {
               "</div>";
           }
         }
-        if (change.type === "modified") { 
+        if (change.type === "modified") {
         }
         if (change.type === "removed") {
         }

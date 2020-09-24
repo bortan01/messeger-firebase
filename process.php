@@ -1,26 +1,5 @@
 <?php
-/*
 
-CREATE DATABASE phpfirebase;
-
-CREATE TABLE IF NOT EXISTS phpfirebase.users (
-	id INT(11) NOT NULL PRIMARY KEY AUTO_INCREMENT,
-	uuid VARCHAR(36) NOT NULL,
-	fullname VARCHAR(36) NOT NULL,
-    username VARCHAR(50) NOT NULL,
-	password VARCHAR(100) NOT NULL,
-	email VARCHAR(100) NOT NULL,
-    UNIQUE KEY (uuid, username)
-);
-
-CREATE TABLE `chat_record`(
-    `chat_uuid` VARCHAR(36) NOT NULL,
-    `user_1_uuid` VARCHAR(36) NOT NULL,
-    `user_2_uuid` VARCHAR(36) NOT NULL,
-    UNIQUE KEY (chat_uuid)
-);
-
-*/
 ini_set('display_errors', 1);
 require __DIR__.'/User.php';
 
