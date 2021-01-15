@@ -1,15 +1,15 @@
-  // Your web app's Firebase configuration
-  // For Firebase JS SDK v7.20.0 and later, measurementId is optional
-  var config = {
-    apiKey: "AIzaSyChjRX4svOM5e6Uj-_KnCLDakaXxsbvv5k",
-    authDomain: "notificacionpush-d6641.firebaseapp.com",
-    databaseURL: "https://notificacionpush-d6641.firebaseio.com",
-    projectId: "notificacionpush-d6641",
-    storageBucket: "notificacionpush-d6641.appspot.com",
-    messagingSenderId: "1036501737046",
-    appId: "1:1036501737046:web:d87683709f65438caa65f7",
-    measurementId: "G-7HDZR639SE"
-  };
+// Your web app's Firebase configuration
+// For Firebase JS SDK v7.20.0 and later, measurementId is optional
+var config = {
+  apiKey: "AIzaSyD0LwZwZuOmigM6wLK4HUYEJsDz8Cz8jks",
+  authDomain: "agenciamartinez-76dbe.firebaseapp.com",
+  databaseURL: "https://agenciamartinez-76dbe.firebaseio.com",
+  projectId: "agenciamartinez-76dbe",
+  storageBucket: "agenciamartinez-76dbe.appspot.com",
+  messagingSenderId: "702881328033",
+  appId: "1:702881328033:web:50a2d8991a278cad7d39e0",
+  measurementId: "G-JNBXFBYQ56"
+};
 // Initialize Firebase
 firebase.initializeApp(config);
 
@@ -18,7 +18,7 @@ var db = firebase.firestore();
 
 // Disable deprecated features
 db.settings({
-	timestampsInSnapshots: true
+  timestampsInSnapshots: true
 });
 
 

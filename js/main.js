@@ -4,10 +4,17 @@ $("#register-btn").on("click", function (e) {
   var btnHTML = $(this).html();
   $(this).html("<img id='loader' src='images/loader.svg' alt='Loading...!' />");
 
+  let myData = {
+    "nombre": document.getElementById("fullname").value,
+    "correo" : document.getElementById("email").value,
+    "password" : document.getElementById("email").value,
+    "celular" : "12334562",
+    "nivel" : "USUARIO",
+  };
   $.ajax({
     url: "http://localhost/API-REST-PHP/Usuario/registroUser",
     method: "POST",
-    data: $("#register-form").serialize(),
+    data: myData,
     success: function (response) {
       $("#register-btn").html(btnHTML);
       console.log(response);

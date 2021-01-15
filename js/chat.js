@@ -1,8 +1,8 @@
 var chat_data = {},
-user_uuid,
-chatHTML = "",
-chat_uuid = "",
-userList = [];
+  user_uuid,
+  chatHTML = "",
+  chat_uuid = "",
+  userList = [];
 var newMessage = "";
 
 firebase.auth().onAuthStateChanged(function (user) {
@@ -17,7 +17,7 @@ firebase.auth().onAuthStateChanged(function (user) {
 
 function logout() {
   $.ajax({
-    url: "process.php",
+    url: "http://localhost/API-REST-PHP/Usuario/logout",
     method: "POST",
     data: { logoutUser: 1 },
     success: function (response) {
@@ -39,16 +39,17 @@ function logout() {
 }
 
 function getUsers() {
-  $.ajax({
-    url: "http://localhost/API-REST-PHP/Usuario/obtenerUsuarios",
+   $.ajax({
+    url: "http://localhost/API-REST-PHP/Usuario/obtenerUsuario",
     method: "GET",
     data: { getUsers: 1 },
     success: function (response) {
-      if (response.status == 200) {
-        var users = response.message.users;
+      if (!response.error) {
+        var users = response.usuario;
         var usersHTML = "";
         var messageCount = "";
         $.each(users, function (index, value) {
+         
           if (user_uuid != value.uuid) {
             usersHTML +=
               '<div class="user" uuid="' +
@@ -57,13 +58,13 @@ function getUsers() {
               '<div class="user-image"></div>' +
               '<div class="user-details">' +
               "<span><strong>" +
-              value.fullname +
+              value.nombre +
               '<span class="count"></span></strong></span>' +
               "<span>Last Login</span>" +
               "</div>" +
               "</div>";
 
-            userList.push({ user_uuid: value.uuid, username: value.username });
+            userList.push({ user_uuid: value.uuid, username: value.nombre });
           }
         });
 

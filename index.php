@@ -57,16 +57,16 @@ if (isset($_SESSION['user_uuid'])) {
                 <h2>Register</h2>
                 <form id="register-form" onsubmit="return false">
                     <div class="form-input">
-                        <input type="text" name="fullname" placeholder="Full Name">
+                        <input type="text" name="fullname" id="fullname" placeholder="Full Name">
                     </div>
                     <div class="form-input">
-                        <input type="text" name="username" placeholder="Username">
+                        <input type="text" name="username" id="username" placeholder="Username">
                     </div>
                     <div class="form-input">
-                        <input type="email" name="email" placeholder="Email">
+                        <input type="email" name="email" id="email" placeholder="Email">
                     </div>
                     <div class="form-input">
-                        <input type="password" name="password" placeholder="Password">
+                        <input type="password" name="password" id="password" placeholder="Password">
                     </div>
                     <input type="hidden" name="register_user" value="1">
                     <div class="form-input">
