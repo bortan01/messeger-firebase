@@ -98,7 +98,7 @@ html, body{
 	height: 50px;
 	background: #cecece;
 	border-radius: 50px;
-	padding: ;
+	/* padding: ; */
 }
 .users .user:hover .user-image{
 	background: #fff;

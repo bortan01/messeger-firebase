@@ -1,14 +1,14 @@
-var chat_data = {},
+let chat_data = {},
   user_uuid,
-  chatHTML = "",
+  foto
+chatHTML = "",
   chat_uuid = "",
   userList = [];
-var newMessage = "";
+let newMessage = "";
 
 firebase.auth().onAuthStateChanged(function (user) {
   if (user) {
     user_uuid = user.uid;
-
     getUsers();
   } else {
     console.log("Not sign in");
@@ -39,22 +39,22 @@ function logout() {
 }
 
 function getUsers() {
-   $.ajax({
+  $.ajax({
     url: "http://localhost/API-REST-PHP/Usuario/obtenerUsuario",
     method: "GET",
     data: { getUsers: 1 },
     success: function (response) {
       if (!response.error) {
-        var users = response.usuario;
-        var usersHTML = "";
-        var messageCount = "";
+        let users = response.usuarios;
+        let usersHTML = "";
+        let messageCount = "";
         $.each(users, function (index, value) {
-         
           if (user_uuid != value.uuid) {
             usersHTML +=
               '<div class="user" uuid="' +
               value.uuid +
               '">' +
+              // '<img  src="' + value.foto + '" class="user-image"/>' +
               '<div class="user-image"></div>' +
               '<div class="user-details">' +
               "<span><strong>" +
@@ -65,6 +65,8 @@ function getUsers() {
               "</div>";
 
             userList.push({ user_uuid: value.uuid, username: value.nombre });
+          } else {
+            foto = value.foto
           }
         });
 
@@ -77,9 +79,9 @@ function getUsers() {
 }
 
 $(document.body).on("click", ".user", function () {
-  var name = $(this).find("strong").text();
-  var user_1 = user_uuid;
-  var user_2 = $(this).attr("uuid");
+  let name = $(this).find("strong").text();
+  let user_1 = user_uuid;
+  let user_2 = $(this).attr("uuid");
   $(".message-container").html("Connecting...!");
 
   $(".name").text(name);
@@ -111,6 +113,8 @@ $(document.body).on("click", ".user", function () {
               chatHTML +=
                 '<div class="message-block">' +
                 '<div class="user-icon"></div>' +
+                // '<img  src="' + foto + '" class="user-image"/>' +
+                // '<img  src="' + foto + '" class="user-icon"/>' +
                 '<div class="message">' +
                 doc.data().message +
                 "</div>" +
@@ -138,7 +142,7 @@ $(document.body).on("click", ".user", function () {
 });
 
 $(".send-btn").on("click", function () {
-  var message = $(".message-input").val();
+  let message = $(".message-input").val();
   if (message != "") {
     db.collection("chat")
       .add({
