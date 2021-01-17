@@ -1,7 +1,7 @@
 let chat_data = {},
   user_uuid,
-  foto
-chatHTML = "",
+  foto,
+  chatHTML = "",
   chat_uuid = "",
   userList = [];
 let newMessage = "";
@@ -55,7 +55,7 @@ function getUsers() {
               value.uuid +
               '">' +
               // '<img  src="' + value.foto + '" class="user-image"/>' +
-              '<div class="user-image"></div>' +
+              '<div class="user-image"><img  src="' + value.foto + '" class="user-image"/></div>' +
               '<div class="user-details">' +
               "<span><strong>" +
               value.nombre +
@@ -112,9 +112,7 @@ $(document.body).on("click", ".user", function () {
             if (doc.data().user_1_uuid == user_uuid) {
               chatHTML +=
                 '<div class="message-block">' +
-                '<div class="user-icon"></div>' +
-                // '<img  src="' + foto + '" class="user-image"/>' +
-                // '<img  src="' + foto + '" class="user-icon"/>' +
+                '<div class="user-icon"><img  src="' + foto + '" class="user-icon"/></div>' +
                 '<div class="message">' +
                 doc.data().message +
                 "</div>" +
@@ -122,7 +120,7 @@ $(document.body).on("click", ".user", function () {
             } else {
               chatHTML +=
                 '<div class="message-block received-message">' +
-                '<div class="user-icon"></div>' +
+                '<div class="user-icon"><img  src="' + foto + '" class="user-icon"/></div>' +
                 '<div class="message">' +
                 doc.data().message +
                 "</div>" +
@@ -177,7 +175,7 @@ function realTime() {
           if (change.doc.data().user_1_uuid == user_uuid) {
             newMessage +=
               '<div class="message-block">' +
-              '<div class="user-icon"></div>' +
+              '<div class="user-icon"><img  src="' + foto + '" class="user-icon"/></div>' +
               '<div class="message">' +
               change.doc.data().message +
               "</div>" +
@@ -185,7 +183,7 @@ function realTime() {
           } else {
             newMessage +=
               '<div class="message-block received-message">' +
-              '<div class="user-icon"></div>' +
+              '<div class="user-icon"><img  src="' + foto + '" class="user-icon"/></div>' +
               '<div class="message">' +
               change.doc.data().message +
               "</div>" +
