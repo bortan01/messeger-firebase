@@ -1,7 +1,7 @@
 $("#register-btn").on("click", function (e) {
   e.preventDefault();
 
-  var btnHTML = $(this).html();
+  let btnHTML = $(this).html();
   $(this).html("<img id='loader' src='images/loader.svg' alt='Loading...!' />");
 
   let myData = {
@@ -28,7 +28,7 @@ $("#register-btn").on("click", function (e) {
 });
 
 $("#login-btn").on("click", function () {
-  var btnHTML = $(this).html();
+  let btnHTML = $(this).html();
   $(this).html("<img id='loader' src='images/loader.svg' alt='Loading...!' />");
 
   $.ajax({
@@ -37,15 +37,15 @@ $("#login-btn").on("click", function () {
     data: $("#login-form").serialize(),
     success: function (resp) {
       if (!resp.err) {
-        var token = resp.token;
+        let token = resp.token;
         console.log(resp.message);
         firebase
           .auth()
           .signInWithCustomToken(token)
           .catch(function (error) {
             // Handle Errors here.
-            var errorCode = error.code;
-            var errorMessage = error.message;
+            let errorCode = error.code;
+            let errorMessage = error.message;
 
             alert(errorMessage);
           })

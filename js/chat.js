@@ -11,6 +11,11 @@ firebase.auth().onAuthStateChanged(function (user) {
   if (user) {
     user_uuid = user.uid;
     getUsers();
+    if (history.state.lastUuid) {
+      console.log(history.state)
+      fotoReceptor = history.state.fotoReceptor;
+      cargarChats(user_uuid, history.state.lastUuid);
+    }
   } else {
     console.log("Not sign in");
   }
@@ -28,7 +33,6 @@ function logout() {
         .signOut()
         .then(function () {
           console.log("Logout");
-
           window.location.href = "index.php";
         })
         .catch(function (error) {
@@ -85,9 +89,13 @@ $(document.body).on("click", ".user", function () {
   let user_1 = user_uuid;
   let user_2 = $(this).attr("uuid");
   $(".message-container").html("Connecting...!");
-
   $(".name").text(name);
+  window.history.replaceState({ lastUuid: user_2, fotoReceptor: fotoReceptor }, "Chat " + name, 'chat.php?cliente=' + name);/////////////////////////////////
+  cargarChats(user_1, user_2);
 
+});
+
+function cargarChats(user_1, user_2) {
   $.ajax({
     url: "http://localhost/API-REST-PHP/Usuario/obtenerChat",
     method: "POST",
@@ -113,7 +121,7 @@ $(document.body).on("click", ".user", function () {
             console.log(doc.data());
             if (doc.data().user_1_uuid == user_uuid) {
               chatHTML +=
-                '<div class="message-block">' +
+                '<div class="message-block received-message">' +
                 '<div class="user-icon"><img  src="' + fotoEmisor + '" class="user-icon"/></div>' +
                 '<div class="message">' +
                 doc.data().message +
@@ -121,7 +129,7 @@ $(document.body).on("click", ".user", function () {
                 "</div>";
             } else {
               chatHTML +=
-                '<div class="message-block received-message">' +
+                '<div class="message-block ">' +
                 '<div class="user-icon"><img  src="' + fotoReceptor + '" class="user-icon"/></div>' +
                 '<div class="message">' +
                 doc.data().message +
@@ -139,7 +147,7 @@ $(document.body).on("click", ".user", function () {
       }
     },
   });
-});
+}
 
 $(".send-btn").on("click", function () {
   let message = $(".message-input").val();
@@ -177,7 +185,7 @@ function realTime() {
           if (change.doc.data().user_1_uuid == user_uuid) {
             ///debe de mostrar la foto de quien esta enviando el mensaje EMISOR
             newMessage +=
-              '<div class="message-block">' +
+              '<div class="message-block received-message">' +
               '<div class="user-icon"><img  src="' + fotoEmisor + '" class="user-icon"/></div>' +
               '<div class="message">' +
               change.doc.data().message +
@@ -186,7 +194,7 @@ function realTime() {
           } else {
             //debe de mostrar la foto de quien se esta recibiendo el mensaje (la imagen que aca de darse click) RECEPTOR
             newMessage +=
-              '<div class="message-block received-message">' +
+              '<div class="message-block ">' +
               '<div class="user-icon"><img  src="' + fotoReceptor + '" class="user-icon"/></div>' +
               '<div class="message">' +
               change.doc.data().message +
