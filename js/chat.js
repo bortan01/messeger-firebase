@@ -1,6 +1,7 @@
 let chat_data = {},
   user_uuid,
-  foto,
+  fotoEmisor,
+  fotoReceptor,
   chatHTML = "",
   chat_uuid = "",
   userList = [];
@@ -66,7 +67,7 @@ function getUsers() {
 
             userList.push({ user_uuid: value.uuid, username: value.nombre });
           } else {
-            foto = value.foto
+            fotoEmisor = value.foto
           }
         });
 
@@ -80,6 +81,7 @@ function getUsers() {
 
 $(document.body).on("click", ".user", function () {
   let name = $(this).find("strong").text();
+  fotoReceptor = $(this).find('img').attr("src");
   let user_1 = user_uuid;
   let user_2 = $(this).attr("uuid");
   $(".message-container").html("Connecting...!");
@@ -112,7 +114,7 @@ $(document.body).on("click", ".user", function () {
             if (doc.data().user_1_uuid == user_uuid) {
               chatHTML +=
                 '<div class="message-block">' +
-                '<div class="user-icon"><img  src="' + foto + '" class="user-icon"/></div>' +
+                '<div class="user-icon"><img  src="' + fotoEmisor + '" class="user-icon"/></div>' +
                 '<div class="message">' +
                 doc.data().message +
                 "</div>" +
@@ -120,7 +122,7 @@ $(document.body).on("click", ".user", function () {
             } else {
               chatHTML +=
                 '<div class="message-block received-message">' +
-                '<div class="user-icon"><img  src="' + foto + '" class="user-icon"/></div>' +
+                '<div class="user-icon"><img  src="' + fotoReceptor + '" class="user-icon"/></div>' +
                 '<div class="message">' +
                 doc.data().message +
                 "</div>" +
@@ -173,17 +175,19 @@ function realTime() {
           console.log(change.doc.data());
 
           if (change.doc.data().user_1_uuid == user_uuid) {
+            ///debe de mostrar la foto de quien esta enviando el mensaje EMISOR
             newMessage +=
               '<div class="message-block">' +
-              '<div class="user-icon"><img  src="' + foto + '" class="user-icon"/></div>' +
+              '<div class="user-icon"><img  src="' + fotoEmisor + '" class="user-icon"/></div>' +
               '<div class="message">' +
               change.doc.data().message +
               "</div>" +
               "</div>";
           } else {
+            //debe de mostrar la foto de quien se esta recibiendo el mensaje (la imagen que aca de darse click) RECEPTOR
             newMessage +=
               '<div class="message-block received-message">' +
-              '<div class="user-icon"><img  src="' + foto + '" class="user-icon"/></div>' +
+              '<div class="user-icon"><img  src="' + fotoReceptor + '" class="user-icon"/></div>' +
               '<div class="message">' +
               change.doc.data().message +
               "</div>" +
