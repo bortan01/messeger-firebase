@@ -10,12 +10,13 @@ let newMessage = "";
 firebase.auth().onAuthStateChanged(function (user) {
   if (user) {
     user_uuid = user.uid;
+    $('#btn-enviar').prop('disabled', true);
     getUsers();
-    if (history.state.lastUuid) {
-      console.log(history.state)
-      fotoReceptor = history.state.fotoReceptor;
-      cargarChats(user_uuid, history.state.lastUuid);
-    }
+    // if (history.state) {
+    //   console.log(history.state)
+    //   fotoReceptor = history.state.fotoReceptor;
+    //   cargarChats(user_uuid, history.state.lastUuid);
+    // }
   } else {
     console.log("Not sign in");
   }
@@ -45,7 +46,7 @@ function logout() {
 
 function getUsers() {
   $.ajax({
-    url: "http://localhost/API-REST-PHP/Usuario/obtenerUsuario",
+    url: "http://localhost/API-REST-PHP/Usuario/obtenerUsuarioByChat",
     method: "GET",
     data: { getUsers: 1 },
     success: function (response) {
@@ -90,12 +91,9 @@ $(document.body).on("click", ".user", function () {
   let user_2 = $(this).attr("uuid");
   $(".message-container").html("Connecting...!");
   $(".name").text(name);
-  window.history.replaceState({ lastUuid: user_2, fotoReceptor: fotoReceptor }, "Chat " + name, 'chat.php?cliente=' + name);/////////////////////////////////
-  cargarChats(user_1, user_2);
+  $('#btn-enviar').prop('disabled', false);
 
-});
-
-function cargarChats(user_1, user_2) {
+  // window.history.replaceState({ lastUuid: user_2, fotoReceptor: fotoReceptor }, "Chat " + name, 'chat.php');/////////////////////////////////
   $.ajax({
     url: "http://localhost/API-REST-PHP/Usuario/obtenerChat",
     method: "POST",
@@ -147,7 +145,64 @@ function cargarChats(user_1, user_2) {
       }
     },
   });
+
+});
+
+
+function ActualizarFecha(uuid) {
+  $.ajax({
+    url: "http://localhost/API-REST-PHP/Usuario/obtenerChat",
+    method: "POST",
+    data: { connectUser: 1, user_1: user_1, user_2: user_2 },
+    success: function (resp) {
+      console.log(resp);
+
+      chat_data = {
+        chat_uuid: resp.message.chat_uuid,
+        user_1_uuid: resp.message.user_1_uuid,
+        user_2_uuid: resp.message.user_2_uuid,
+        user_1_name: "",
+        user_2_name: name,
+      };
+      $(".message-container").html("Saluda a  " + name);
+      db.collection("chat")
+        .where("chat_uuid", "==", chat_data.chat_uuid)
+        .orderBy("time")
+        .get()
+        .then(function (querySnapshot) {
+          chatHTML = "";
+          querySnapshot.forEach(function (doc) {
+            console.log(doc.data());
+            if (doc.data().user_1_uuid == user_uuid) {
+              chatHTML +=
+                '<div class="message-block received-message">' +
+                '<div class="user-icon"><img  src="' + fotoEmisor + '" class="user-icon"/></div>' +
+                '<div class="message">' +
+                doc.data().message +
+                "</div>" +
+                "</div>";
+            } else {
+              chatHTML +=
+                '<div class="message-block ">' +
+                '<div class="user-icon"><img  src="' + fotoReceptor + '" class="user-icon"/></div>' +
+                '<div class="message">' +
+                doc.data().message +
+                "</div>" +
+                "</div>";
+            }
+          });
+
+          $(".message-container").html(chatHTML);
+        });
+
+      if (chat_uuid == "") {
+        chat_uuid = chat_data.chat_uuid;
+        realTime();
+      }
+    },
+  });
 }
+
 
 $(".send-btn").on("click", function () {
   let message = $(".message-input").val();
