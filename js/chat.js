@@ -89,7 +89,7 @@ $(document.body).on("click", ".user", function () {
   fotoReceptor = $(this).find('img').attr("src");
   let user_1 = user_uuid;
   let user_2 = $(this).attr("uuid");
-  $(".message-container").html("Connecting...!");
+  $(".message-container").html("Cargando Mensajes...");
   $(".name").text(name);
   $('#btn-enviar').prop('disabled', false);
 
@@ -108,7 +108,7 @@ $(document.body).on("click", ".user", function () {
         user_1_name: "",
         user_2_name: name,
       };
-      $(".message-container").html("Say Hi to " + name);
+      $(".message-container").html("Cargando Mensajes...");
       db.collection("chat")
         .where("chat_uuid", "==", chat_data.chat_uuid)
         .orderBy("time")

@@ -59,8 +59,8 @@
                   <div class="chats">
                      <div class="message-container">
                         <img src="http://localhost/plantillas/SistemaAgencia/img/logo.jpg" class="user-image"
-                           style="height: auto;    width: 50%; display: block; margin: auto;" />
-                        <span style="text-align: center; display: block; font-size: xxx-large;">selecccione un
+                           style="height: auto;    width: 40%; display: block; margin: auto;" />
+                        <span style="text-align: center; display: block; font-size: xxx-large;">seleccione un
                            chat</span>
                      </div>
                   </div>
