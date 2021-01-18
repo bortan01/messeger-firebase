@@ -66,7 +66,7 @@ function getUsers() {
               "<span><strong>" +
               value.nombre +
               '<span class="count"></span></strong></span>' +
-              "<span>Last Login</span>" +
+              "<span></span>" +
               "</div>" +
               "</div>";
 
@@ -116,7 +116,7 @@ $(document.body).on("click", ".user", function () {
         .then(function (querySnapshot) {
           chatHTML = "";
           querySnapshot.forEach(function (doc) {
-            console.log(doc.data());
+            // console.log(doc.data());
             if (doc.data().user_1_uuid == user_uuid) {
               chatHTML +=
                 '<div class="message-block received-message">' +
@@ -149,60 +149,16 @@ $(document.body).on("click", ".user", function () {
 });
 
 
-function ActualizarFecha(uuid) {
+function actualizarFecha(uuid) {
   $.ajax({
-    url: "http://localhost/API-REST-PHP/Usuario/obtenerChat",
-    method: "POST",
-    data: { connectUser: 1, user_1: user_1, user_2: user_2 },
+    url: "http://localhost/API-REST-PHP/Usuario/updateFecha",
+    method: "PUT",
+    data: { uuid },
     success: function (resp) {
       console.log(resp);
-
-      chat_data = {
-        chat_uuid: resp.message.chat_uuid,
-        user_1_uuid: resp.message.user_1_uuid,
-        user_2_uuid: resp.message.user_2_uuid,
-        user_1_name: "",
-        user_2_name: name,
-      };
-      $(".message-container").html("Saluda a  " + name);
-      db.collection("chat")
-        .where("chat_uuid", "==", chat_data.chat_uuid)
-        .orderBy("time")
-        .get()
-        .then(function (querySnapshot) {
-          chatHTML = "";
-          querySnapshot.forEach(function (doc) {
-            console.log(doc.data());
-            if (doc.data().user_1_uuid == user_uuid) {
-              chatHTML +=
-                '<div class="message-block received-message">' +
-                '<div class="user-icon"><img  src="' + fotoEmisor + '" class="user-icon"/></div>' +
-                '<div class="message">' +
-                doc.data().message +
-                "</div>" +
-                "</div>";
-            } else {
-              chatHTML +=
-                '<div class="message-block ">' +
-                '<div class="user-icon"><img  src="' + fotoReceptor + '" class="user-icon"/></div>' +
-                '<div class="message">' +
-                doc.data().message +
-                "</div>" +
-                "</div>";
-            }
-          });
-
-          $(".message-container").html(chatHTML);
-        });
-
-      if (chat_uuid == "") {
-        chat_uuid = chat_data.chat_uuid;
-        realTime();
-      }
     },
   });
 }
-
 
 $(".send-btn").on("click", function () {
   let message = $(".message-input").val();
@@ -220,6 +176,7 @@ $(".send-btn").on("click", function () {
       .then(function (docRef) {
         $(".message-input").val("");
         console.log("Document written with ID: ", docRef.id);
+        actualizarFecha(chat_data.user_2_uuid);
       })
       .catch(function (error) {
         console.error("Error adding document: ", error);
@@ -235,7 +192,7 @@ function realTime() {
       newMessage = "";
       snapshot.docChanges().forEach(function (change) {
         if (change.type === "added") {
-          console.log(change.doc.data());
+          // console.log(change.doc.data());
 
           if (change.doc.data().user_1_uuid == user_uuid) {
             ///debe de mostrar la foto de quien esta enviando el mensaje EMISOR

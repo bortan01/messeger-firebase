@@ -81,12 +81,6 @@
 
    <script type="text/javascript" src="js/firestore-config.js"></script>
    <script type="text/javascript" src="js/chat.js">
-
-
-
-
-
-
    </script>
 
 
