@@ -74,3 +74,4 @@ function changeForm($this) {
 $(".card input").on("focus blur", function () {
   $(".card").toggleClass("active");
 });
+
