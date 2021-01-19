@@ -2,6 +2,7 @@ let chat_data = {},
   user_uuid,
   fotoEmisor,
   fotoReceptor,
+  chatViejo,
   chatHTML = "",
   chat_uuid = "",
   userList = [];
@@ -85,6 +86,13 @@ function getUsers() {
 }
 
 $(document.body).on("click", ".user", function () {
+  let chatNuevo = $(this);
+  chatNuevo.css("background", "#cecece");
+  if (chatViejo && !chatNuevo.is(chatViejo)) {
+    chatViejo.css("background", "transparent");
+  }
+  chatViejo = chatNuevo;
+
   let name = $(this).find("strong").text();
   fotoReceptor = $(this).find('img').attr("src");
   let user_1 = user_uuid;
