@@ -66,7 +66,7 @@
                   </div>
                   <div class="write-message">
                      <div class="message-area">
-                        <textarea class="message-input" placeholder="Type a message"></textarea>
+                        <textarea class="message-input" id="message-input" placeholder="Type a message"></textarea>
                         <button id="btn-enviar" class="send-btn"><i
                               class="fab fa-telegram-plane"></i>&nbsp;Send</button>
                      </div>

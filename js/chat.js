@@ -99,7 +99,7 @@ $(document.body).on("click", ".user", function () {
     method: "POST",
     data: { connectUser: 1, user_1: user_1, user_2: user_2 },
     success: function (resp) {
-      console.log(resp);
+      // console.log(resp);
 
       chat_data = {
         chat_uuid: resp.message.chat_uuid,
@@ -139,8 +139,11 @@ $(document.body).on("click", ".user", function () {
           $(".message-container").html(chatHTML);
         });
 
+
       if (chat_uuid == "") {
         chat_uuid = chat_data.chat_uuid;
+        realTime();
+      } else {
         realTime();
       }
     },
@@ -148,41 +151,21 @@ $(document.body).on("click", ".user", function () {
 
 });
 
-
 function actualizarFecha(uuid) {
   $.ajax({
     url: "http://localhost/API-REST-PHP/Usuario/updateFecha",
     method: "PUT",
     data: { uuid },
     success: function (resp) {
-      console.log(resp);
+      // console.log(resp);
     },
   });
 }
 
 $(".send-btn").on("click", function () {
-  let message = $(".message-input").val();
-  if (message != "") {
-    db.collection("chat")
-      .add({
-        message: message,
-        user_1_uuid: user_uuid,
-        user_2_uuid: chat_data.user_2_uuid,
-        chat_uuid: chat_data.chat_uuid,
-        user_1_isView: 0,
-        user_2_isView: 0,
-        time: new Date(),
-      })
-      .then(function (docRef) {
-        $(".message-input").val("");
-        console.log("Document written with ID: ", docRef.id);
-        actualizarFecha(chat_data.user_2_uuid);
-      })
-      .catch(function (error) {
-        console.error("Error adding document: ", error);
-      });
-  }
+  enviarMensaje();
 });
+
 
 function realTime() {
   db.collection("chat")
@@ -226,4 +209,37 @@ function realTime() {
 
       $(".chats").scrollTop($(".chats")[0].scrollHeight);
     });
+}
+
+$('#message-input').keypress(function (e) {
+  var keycode = (e.keyCode ? e.keyCode : e.which);
+  if (keycode == '13') {
+    enviarMensaje();
+    e.preventDefault();
+    return false;
+  }
+});
+
+function enviarMensaje() {
+  let message = $(".message-input").val();
+  if (message != "") {
+    db.collection("chat")
+      .add({
+        message: message,
+        user_1_uuid: user_uuid,
+        user_2_uuid: chat_data.user_2_uuid,
+        chat_uuid: chat_data.chat_uuid,
+        user_1_isView: 0,
+        user_2_isView: 0,
+        time: new Date(),
+      })
+      .then(function (docRef) {
+        $(".message-input").val("");
+        // console.log("Document written with ID: ", docRef.id);
+        actualizarFecha(chat_data.user_2_uuid);
+      })
+      .catch(function (error) {
+        console.error("Error adding document: ", error);
+      });
+  }
 }
