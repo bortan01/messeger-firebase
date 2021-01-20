@@ -7,7 +7,8 @@ let chat_data = {},
   chat_uuid = "",
   userList = [];
 let newMessage = "";
-
+let referenciaRT;
+let activarSonido = false;
 firebase.auth().onAuthStateChanged(function (user) {
   if (user) {
     user_uuid = user.uid;
@@ -93,6 +94,11 @@ $(document.body).on("click", ".user", function () {
   }
   chatViejo = chatNuevo;
 
+  ///con esto se arregla el bug
+  if (referenciaRT) {
+    referenciaRT();
+  }
+
   let name = $(this).find("strong").text();
   fotoReceptor = $(this).find('img').attr("src");
   let user_1 = user_uuid;
@@ -101,14 +107,12 @@ $(document.body).on("click", ".user", function () {
   $(".name").text(name);
   $('#btn-enviar').prop('disabled', false);
 
-  // window.history.replaceState({ lastUuid: user_2, fotoReceptor: fotoReceptor }, "Chat " + name, 'chat.php');/////////////////////////////////
+  //OBTEGO LOS DATOS PARTICULARES DE ESE CHAT
   $.ajax({
     url: "http://localhost/API-REST-PHP/Usuario/obtenerChat",
     method: "POST",
     data: { connectUser: 1, user_1: user_1, user_2: user_2 },
     success: function (resp) {
-      // console.log(resp);
-
       chat_data = {
         chat_uuid: resp.message.chat_uuid,
         user_1_uuid: resp.message.user_1_uuid,
@@ -117,43 +121,8 @@ $(document.body).on("click", ".user", function () {
         user_2_name: name,
       };
       $(".message-container").html("Cargando Mensajes...");
-      db.collection("chat")
-        .where("chat_uuid", "==", chat_data.chat_uuid)
-        .orderBy("time")
-        .get()
-        .then(function (querySnapshot) {
-          chatHTML = "";
-          querySnapshot.forEach(function (doc) {
-            // console.log(doc.data());
-            if (doc.data().user_1_uuid == user_uuid) {
-              chatHTML +=
-                '<div class="message-block received-message">' +
-                '<div class="user-icon"><img  src="' + fotoEmisor + '" class="user-icon"/></div>' +
-                '<div class="message">' +
-                doc.data().message +
-                "</div>" +
-                "</div>";
-            } else {
-              chatHTML +=
-                '<div class="message-block ">' +
-                '<div class="user-icon"><img  src="' + fotoReceptor + '" class="user-icon"/></div>' +
-                '<div class="message">' +
-                doc.data().message +
-                "</div>" +
-                "</div>";
-            }
-          });
-
-          $(".message-container").html(chatHTML);
-        });
-
-
-      if (chat_uuid == "") {
-        chat_uuid = chat_data.chat_uuid;
-        realTime();
-      } else {
-        realTime();
-      }
+      activarSonido = false;
+      realTime();
     },
   });
 
@@ -174,17 +143,16 @@ $(".send-btn").on("click", function () {
   enviarMensaje();
 });
 
-
+///CREA UN LISTERNER INTERNAMENTE PARA CREAR LOS NUEVOS MENSAJES EN PANTALLA
 function realTime() {
-  db.collection("chat")
+  referenciaRT = db.collection("chat")
     .where("chat_uuid", "==", chat_data.chat_uuid)
     .orderBy("time")
     .onSnapshot(function (snapshot) {
       newMessage = "";
       snapshot.docChanges().forEach(function (change) {
         if (change.type === "added") {
-          // console.log(change.doc.data());
-
+          console.log("por dibujar")
           if (change.doc.data().user_1_uuid == user_uuid) {
             ///debe de mostrar la foto de quien esta enviando el mensaje EMISOR
             newMessage +=
@@ -195,6 +163,10 @@ function realTime() {
               "</div>" +
               "</div>";
           } else {
+            if (activarSonido) {
+              let audio = new Audio('new-ticket.mp3');
+              audio.play();
+            }
             //debe de mostrar la foto de quien se esta recibiendo el mensaje (la imagen que aca de darse click) RECEPTOR
             newMessage +=
               '<div class="message-block ">' +
@@ -210,11 +182,10 @@ function realTime() {
         if (change.type === "removed") {
         }
       });
-
       if (chatHTML != newMessage) {
         $(".message-container").append(newMessage);
       }
-
+      activarSonido = true;
       $(".chats").scrollTop($(".chats")[0].scrollHeight);
     });
 }
