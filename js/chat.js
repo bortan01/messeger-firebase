@@ -155,12 +155,14 @@ function realTime() {
       newMessage = "";
       snapshot.docChanges().slice().reverse().forEach(function (change) {
 
-        let lastVisible = snapshot.docs[snapshot.docs.length - 1];
-        proximaConsulta = db.collection("chat")
-          .where("chat_uuid", "==", chat_data.chat_uuid)
-          .orderBy("time", "desc")
-          .startAfter(lastVisible)
-          .limit(2);
+        if (!proximaConsulta) {
+          let lastVisible = snapshot.docs[snapshot.docs.length - 1];
+          proximaConsulta = db.collection("chat")
+            .where("chat_uuid", "==", chat_data.chat_uuid)
+            .orderBy("time", "desc")
+            .startAfter(lastVisible)
+            .limit(2);
+        }
 
         if (change.type === "added") {
           if (change.doc.data().user_1_uuid == user_uuid) {
