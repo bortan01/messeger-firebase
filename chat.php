@@ -56,7 +56,7 @@
             <div class="chat-container">
                <div class="heading"><i class="fas fa-user"></i>&nbsp;<span class="name"></span></div>
                <div class="messages">
-                  <div class="chats">
+                  <div class="chats" id="chats">
                      <div class="message-container">
                         <img src="http://localhost/plantillas/SistemaAgencia/img/logo.jpg" class="user-image"
                            style="height: auto;    width: 40%; display: block; margin: auto;" />

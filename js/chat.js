@@ -9,6 +9,7 @@ let chat_data = {},
 let newMessage = "";
 let referenciaRT;
 let activarSonido = false;
+let proximaConsulta;
 firebase.auth().onAuthStateChanged(function (user) {
   if (user) {
     user_uuid = user.uid;
@@ -106,6 +107,7 @@ $(document.body).on("click", ".user", function () {
   $(".message-container").html("Cargando Mensajes...");
   $(".name").text(name);
   $('#btn-enviar').prop('disabled', false);
+  proximaConsulta = null;
 
   //OBTEGO LOS DATOS PARTICULARES DE ESE CHAT
   $.ajax({
@@ -120,7 +122,7 @@ $(document.body).on("click", ".user", function () {
         user_1_name: "",
         user_2_name: name,
       };
-      $(".message-container").html("Cargando Mensajes...");
+      $(".message-container").empty();
       activarSonido = false;
       realTime();
     },
@@ -147,12 +149,20 @@ $(".send-btn").on("click", function () {
 function realTime() {
   referenciaRT = db.collection("chat")
     .where("chat_uuid", "==", chat_data.chat_uuid)
-    .orderBy("time")
+    .orderBy("time", "desc")
+    .limit(9)
     .onSnapshot(function (snapshot) {
       newMessage = "";
-      snapshot.docChanges().forEach(function (change) {
+      snapshot.docChanges().slice().reverse().forEach(function (change) {
+
+        let lastVisible = snapshot.docs[snapshot.docs.length - 1];
+        proximaConsulta = db.collection("chat")
+          .where("chat_uuid", "==", chat_data.chat_uuid)
+          .orderBy("time", "desc")
+          .startAfter(lastVisible)
+          .limit(2);
+
         if (change.type === "added") {
-          console.log("por dibujar")
           if (change.doc.data().user_1_uuid == user_uuid) {
             ///debe de mostrar la foto de quien esta enviando el mensaje EMISOR
             newMessage +=
@@ -222,3 +232,61 @@ function enviarMensaje() {
       });
   }
 }
+$('#chats').scroll(function () {
+  if ($('#chats').scrollTop() == 0) {
+    console.log("cargar nuevos datos");
+    activarSonido = false;
+
+    if (proximaConsulta) {
+      proximaConsulta
+        .get()
+        .then(function (querySnapshot) {
+          let arrMessage = [];
+          querySnapshot.forEach(function (doc) {
+            if (doc.data().user_1_uuid == user_uuid) {
+              ///debe de mostrar la foto de quien esta enviando el mensaje EMISOR
+              let newMessage =
+                '<div class="message-block received-message">' +
+                '<div class="user-icon"><img  src="' + fotoEmisor + '" class="user-icon"/></div>' +
+                '<div class="message">' +
+                doc.data().message +
+                "</div>" +
+                "</div>";
+              arrMessage.push(newMessage);
+            } else {
+              if (activarSonido) {
+                ///HACEMOS ESTO PARA EVITAR QUE SUENE EL TONO CUANDO SE ESTA INICIALIZANDO LA DATA
+                let audio = new Audio('new-ticket.mp3');
+                audio.play();
+              }
+              //debe de mostrar la foto de quien se esta recibiendo el mensaje (la imagen que aca de darse click) RECEPTOR
+              let newMessage =
+                '<div class="message-block ">' +
+                '<div class="user-icon"><img  src="' + fotoReceptor + '" class="user-icon"/></div>' +
+                '<div class="message">' +
+                doc.data().message +
+                "</div>" +
+                "</div>";
+              arrMessage.push(newMessage);
+            }
+          });
+          ///CON ESTO AGREGAMOS LOS NUEVOS CHAT HASTA ARRIBA 
+          arrMessage.forEach(element => { $(".message-container").prepend(element); });
+          //PARA CUANDO SE CARGUE LOS NUEVOS MENSAJES EL SCROLL QUEDE EN LA MISMA POSICION
+          //CADA MENSAJE OCUPA 52.0 PX DE ALTURA
+          $(".chats").scrollTop(arrMessage.length * 52.0);
+
+          //PREPARAMOS EL TERRENO PARA UNA NUEVA CONSULTA
+          let lastVisible = querySnapshot.docs[querySnapshot.docs.length - 1];
+          proximaConsulta = db.collection("chat")
+            .where("chat_uuid", "==", chat_data.chat_uuid)
+            .orderBy("time", "desc")
+            .startAfter(lastVisible)
+            .limit(2);
+
+        }).catch(function (error) {
+          console.log("Error getting document:", error);
+        });
+    }
+  }
+});
