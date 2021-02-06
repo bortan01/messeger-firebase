@@ -6,10 +6,10 @@ $("#register-btn").on("click", function (e) {
 
   let myData = {
     "nombre": document.getElementById("fullname").value,
-    "correo" : document.getElementById("email").value,
-    "password" : document.getElementById("email").value,
-    "celular" : "12334562",
-    "nivel" : "USUARIO",
+    "correo": document.getElementById("email").value,
+    "password": document.getElementById("email").value,
+    "celular": "12334562",
+    "nivel": "USUARIO",
   };
   $.ajax({
     url: "http://localhost/API-REST-PHP/Usuario/registroUser",
@@ -34,32 +34,79 @@ $("#login-btn").on("click", function () {
   $.ajax({
     url: "http://localhost/API-REST-PHP/Usuario/loginUser",
     method: "POST",
-    data: $("#login-form").serialize(),
-    success: function (resp) {
-      if (!resp.err) {
+    data: $("#login-form").serialize()
+  }).done(function (resp) {
+
+    //NUESTRO SERVICIO RETORNARA UN TOKEN QUE ES EL
+    // QUE OCUPAREMOS PARA MANEJAR LA SESION DEL USUARIO
+    if (!resp.err) {
+      if (resp.nivel == 'CLIENTE') {
+        //aqui estamos guardando la foto de perfil del usuario          
+        localStorage.setItem('fotoPerfil', resp.foto)
         let token = resp.token;
-        console.log(resp.message);
         firebase
           .auth()
           .signInWithCustomToken(token)
-          .catch(function (error) {
-            // Handle Errors here.
-            let errorCode = error.code;
-            let errorMessage = error.message;
-
-            alert(errorMessage);
-          })
           .then(function (data) {
             $("#login-btn").html(btnHTML);
             if (data.user.uid != "") {
               window.location.href = "chat.php";
             }
+          }).catch(function (error) {
+            // Handle Errors here.
+            let errorCode = error.code;
+            let errorMessage = error.message;
+            alert(errorMessage);
           });
       } else {
-        alert(response.message);
+        $("#login-btn").html(btnHTML);
+        Toast.fire({
+          title: 'Oops...',
+          icon: 'error',
+          text: 'No tienes los permisos necesarios',
+          showConfirmButton: true,
+        });
       }
-    },
-  });
+    } else {
+      Toast.fire({
+        title: 'Oops...',
+        icon: 'error',
+        text: 'Credenciales no validas',
+        showConfirmButton: true,
+      });
+    }
+
+  }).fail(function (resp) {
+
+    if (resp.responseJSON.err) {
+      if (resp.responseJSON.mensaje == 'EMAIL_NOT_FOUND') {
+
+        Toast.fire({
+          title: 'Oops...',
+          icon: 'error',
+          text: 'Correo electrónico no registrado',
+          showConfirmButton: true,
+        });
+      }
+      else if (resp.responseJSON.mensaje == 'INVALID_EMAIL') {
+        Toast.fire({
+          title: 'Oops...',
+          icon: 'error',
+          text: 'Correo electrónico no valido',
+          showConfirmButton: true,
+        });
+      }
+    } else {
+      Toast.fire({
+        title: 'Oops...',
+        icon: 'error',
+        text: 'Credenciales no validas',
+        showConfirmButton: true,
+      });
+    }
+    $("#login-btn").html(btnHTML);
+
+  });;
 });
 
 $(".login-register-btn").on("click", function () {

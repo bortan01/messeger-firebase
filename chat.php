@@ -35,22 +35,7 @@
       </header>
       <div class="flex-box">
          <div class="box-1">
-            <div class="messenger">
-               <div class="heading"><i class="fab fa-facebook-messenger"></i>&nbsp;<span>Messenger</span></div>
-               <div class="users">
 
-                  <!-- Dynamic Users -->
-                  <!-- <div class="user">
-						<div class="user-image"></div>
-						<div class="user-details">
-							<span><strong>Rizwan Khan</strong></span>
-							<span>Last Login</span>
-						</div>
-					</div> -->
-                  <!-- Dynamic users End -->
-
-               </div>
-            </div>
          </div>
          <div class="box-2">
             <div class="chat-container">

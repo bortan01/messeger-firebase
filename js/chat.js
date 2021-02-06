@@ -1,111 +1,49 @@
-let chat_data = {},
-  user_uuid,
-  fotoEmisor,
-  fotoReceptor,
-  chatViejo,
-  chatHTML = "",
-  chat_uuid = "",
-  userList = [];
+let chat_data = {};
+let user_uuid;
+let chatViejo;
+let chatHTML = "";
+let chat_uuid = "";
+let userList = [];
 let newMessage = "";
 let referenciaRT;
 let activarSonido = false;
 let proximaConsulta;
+let fotoEmisor =localStorage.fotoPerfil;
+let fotoReceptor = 'http://localhost/API-REST-PHP/uploads/0027132020121631.jpg';
 firebase.auth().onAuthStateChanged(function (user) {
   if (user) {
+    // ES MI UUID
     user_uuid = user.uid;
+    inicializarChat();
     $('#btn-enviar').prop('disabled', true);
-    getUsers();
-    // if (history.state) {
-    //   console.log(history.state)
-    //   fotoReceptor = history.state.fotoReceptor;
-    //   cargarChats(user_uuid, history.state.lastUuid);
-    // }
   } else {
     console.log("Not sign in");
   }
 });
 
+
+
 function logout() {
-  $.ajax({
-    url: "http://localhost/API-REST-PHP/Usuario/logout",
-    method: "POST",
-    data: { logoutUser: 1 },
-    success: function (response) {
-      console.log(response);
-      firebase
-        .auth()
-        .signOut()
-        .then(function () {
-          console.log("Logout");
-          window.location.href = "index.php";
-        })
-        .catch(function (error) {
-          // An error happened.
-          console.log("Logout Fail");
-        });
-    },
-  });
+  firebase
+    .auth()
+    .signOut()
+    .then(function () {
+      console.log("Logout");
+      window.location.href = "index.php";
+    })
+    .catch(function (error) {
+      // An error happened.
+      console.log("Logout Fail");
+    });
 }
 
-function getUsers() {
-  $.ajax({
-    url: "http://localhost/API-REST-PHP/Usuario/obtenerUsuarioByChat",
-    method: "GET",
-    data: { getUsers: 1 },
-    success: function (response) {
-      if (!response.error) {
-        let users = response.usuarios;
-        let usersHTML = "";
-        let messageCount = "";
-        $.each(users, function (index, value) {
-          if (user_uuid != value.uuid) {
-            usersHTML +=
-              '<div class="user" uuid="' +
-              value.uuid +
-              '">' +
-              // '<img  src="' + value.foto + '" class="user-image"/>' +
-              '<div class="user-image"><img  src="' + value.foto + '" class="user-image"/></div>' +
-              '<div class="user-details">' +
-              "<span><strong>" +
-              value.nombre +
-              '<span class="count"></span></strong></span>' +
-              "<span></span>" +
-              "</div>" +
-              "</div>";
 
-            userList.push({ user_uuid: value.uuid, username: value.nombre });
-          } else {
-            fotoEmisor = value.foto
-          }
-        });
 
-        $(".users").html(usersHTML);
-      } else {
-        console.log(response.message);
-      }
-    },
-  });
-}
-
-$(document.body).on("click", ".user", function () {
-  let chatNuevo = $(this);
-  chatNuevo.css("background", "#cecece");
-  if (chatViejo && !chatNuevo.is(chatViejo)) {
-    chatViejo.css("background", "transparent");
-  }
-  chatViejo = chatNuevo;
-
-  ///con esto se arregla el bug
-  if (referenciaRT) {
-    referenciaRT();
-  }
-
-  let name = $(this).find("strong").text();
-  fotoReceptor = $(this).find('img').attr("src");
+function inicializarChat() {
   let user_1 = user_uuid;
-  let user_2 = $(this).attr("uuid");
+  let user_2 = '28TK1JZ3yWRf2DT5TzdRd5hT0L43';
   $(".message-container").html("Cargando Mensajes...");
-  $(".name").text(name);
+  $(".name").text("ADMINISTRADOR");
   $('#btn-enviar').prop('disabled', false);
   proximaConsulta = null;
 
@@ -114,21 +52,23 @@ $(document.body).on("click", ".user", function () {
     url: "http://localhost/API-REST-PHP/Usuario/obtenerChat",
     method: "POST",
     data: { connectUser: 1, user_1: user_1, user_2: user_2 },
-    success: function (resp) {
-      chat_data = {
-        chat_uuid: resp.message.chat_uuid,
-        user_1_uuid: resp.message.user_1_uuid,
-        user_2_uuid: resp.message.user_2_uuid,
-        user_1_name: "",
-        user_2_name: name,
-      };
-      $(".message-container").empty();
-      activarSonido = false;
-      realTime();
-    },
-  });
 
-});
+  }).done(function (resp) {
+    console.log(resp)
+    chat_data = {
+      chat_uuid: resp.message.chat_uuid,
+      user_1_uuid: resp.message.user_1_uuid,
+      user_2_uuid: resp.message.user_2_uuid,
+      user_1_name: "YO",
+      user_2_name: "ADMINISTRADOR",
+    };
+    $(".message-container").empty();
+    activarSonido = false;
+    realTime();
+  }).fail(function (resp) {
+    console.log(resp)
+  });
+}
 
 function actualizarFecha(uuid) {
   $.ajax({
