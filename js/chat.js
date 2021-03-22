@@ -9,13 +9,13 @@ let referenciaRT;
 let activarSonido = false;
 let proximaConsulta;
 let fotoEmisor =localStorage.fotoPerfil;
-let fotoReceptor = 'http://localhost/API-REST-PHP/uploads/0027132020121631.jpg';
+let fotoReceptor = 'http://localhost/API-REST-PHP/uploads/avatar.png';
 firebase.auth().onAuthStateChanged(function (user) {
   if (user) {
     // ES MI UUID
     user_uuid = user.uid;
     inicializarChat();
-    $('#btn-enviar').prop('disabled', true);
+    $('#btn-enviar').prop('disabled', false);
   } else {
     console.log("Not sign in");
   }

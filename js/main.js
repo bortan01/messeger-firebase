@@ -30,7 +30,7 @@ $("#register-btn").on("click", function (e) {
 $("#login-btn").on("click", function () {
   let btnHTML = $(this).html();
   $(this).html("<img id='loader' src='images/loader.svg' alt='Loading...!' />");
-
+  // const Toast = Swal.mixin();
   $.ajax({
     url: "http://localhost/API-REST-PHP/Usuario/loginUser",
     method: "POST",
@@ -60,49 +60,53 @@ $("#login-btn").on("click", function () {
           });
       } else {
         $("#login-btn").html(btnHTML);
-        Toast.fire({
-          title: 'Oops...',
-          icon: 'error',
-          text: 'No tienes los permisos necesarios',
-          showConfirmButton: true,
-        });
+        // Toast.fire({
+        //   title: 'Oops...',
+        //   icon: 'error',
+        //   text: 'No tienes los permisos necesarios',
+        //   showConfirmButton: true,
+        // });
+        console.log("No tienes los permisos necesarios");
       }
     } else {
-      Toast.fire({
-        title: 'Oops...',
-        icon: 'error',
-        text: 'Credenciales no validas',
-        showConfirmButton: true,
-      });
+      // Toast.fire({
+      //   title: 'Oops...',
+      //   icon: 'error',
+      //   text: 'Credenciales no validas',
+      //   showConfirmButton: true,
+      // });
+      console.log("Credenciales no validas")
     }
 
   }).fail(function (resp) {
 
     if (resp.responseJSON.err) {
       if (resp.responseJSON.mensaje == 'EMAIL_NOT_FOUND') {
-
-        Toast.fire({
-          title: 'Oops...',
-          icon: 'error',
-          text: 'Correo electrónico no registrado',
-          showConfirmButton: true,
-        });
+        console.log("Correo electrónico no registrado")
+        // Toast.fire({
+        //   title: 'Oops...',
+        //   icon: 'error',
+        //   text: 'Correo electrónico no registrado',
+        //   showConfirmButton: true,
+        // });
       }
       else if (resp.responseJSON.mensaje == 'INVALID_EMAIL') {
-        Toast.fire({
-          title: 'Oops...',
-          icon: 'error',
-          text: 'Correo electrónico no valido',
-          showConfirmButton: true,
-        });
+       console.log("Correo electrónico no valido")
+        // Toast.fire({
+        //   title: 'Oops...',
+        //   icon: 'error',
+        //   text: 'Correo electrónico no valido',
+        //   showConfirmButton: true,
+        // });
       }
     } else {
-      Toast.fire({
-        title: 'Oops...',
-        icon: 'error',
-        text: 'Credenciales no validas',
-        showConfirmButton: true,
-      });
+    console.log("Credenciales no validas")
+      // Toast.fire({
+      //   title: 'Oops...',
+      //   icon: 'error',
+      //   text: 'Credenciales no validas',
+      //   showConfirmButton: true,
+      // });
     }
     $("#login-btn").html(btnHTML);
 
